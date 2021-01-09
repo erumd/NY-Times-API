@@ -5,8 +5,7 @@ $('#searchBtn').on('click',function () {
 
 
 var searchTerm = "";
-console.log (searchTerm,);
-var NumberOfRecords = 0;
+var numResults = 0;
 var startYear= 0;
 var endYear= 0;
 
@@ -42,7 +41,7 @@ var articleCounter= 0;
     console.log (queryURL, "This link with searchTerm results ");
 
     // get number of records
-
+    numResults = $('#numberRecords').val();
 
     //get the start and end year
     startYear = $('#startYear').val().trim(); //format has to be month and year 
@@ -66,24 +65,25 @@ var articleCounter= 0;
 
 
     // articleSearch(searchTerm); // if you do NOT add searchTerm here then var searchTerm is not used. will NOT print in console. 
-    // Need to take the seachTerm and apply
+    // Need to take the searchTerm and apply
     // WHEN i comment out line 52 then ajax line line 71 works
+
+    runQuery (numResults, queryURL);
 
     return false; 
 
 
    
    
-
+});
 
     function runQuery (numArticle, queryURL) {
-        var searchTerm = "";
-        var NumberOfRecords = 0;
+        // var searchTerm = "";
 
-        var APIKey = "W5lPM8CLniwWl0pIXqH00aXvT8feUKyz";
-        // console.log (APIKey);
+        // var APIKey = "W5lPM8CLniwWl0pIXqH00aXvT8feUKyz";
+        // // console.log (APIKey);
        
-        var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm + "&api-key=" + APIKey;
+        // var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm + "&api-key=" + APIKey;
         // console.log (queryURL, "2link With the search term"); // taking user input into search 
     
     // console.log (APIKey);
@@ -95,6 +95,49 @@ var articleCounter= 0;
              method: "GET",
         }).then(function(NYData) {
 
+
+            // clear the wells from the previous run
+            $('#wellSection').empty();
+
+        for (var i=0; i<numArticle; i++) {
+            console.log("headline)");
+            console.log(NYData.response.docs[i].headline.main)
+            console.log(NYData.response.docs[i].section.main);
+            console.log(NYData.response.docs[i].pub_date);
+            console.log(NYData.response.docs[i].byline.original);
+            console.log(NYData.response.docs[i].web_url);
+
+
+
+
+            // start dumping to HTML here
+            var wellSection = $('<div>');
+            wellSection.addClass("well");
+            wellSection.attr('id', (wellSection));
+            $('wellSection').append(wellSection);
+
+            // check if things exist 
+            if(NYData.response.docs[i].headline != "null") {
+                console.log(NYData.response.docs[i].byline.original);
+                $('#articleWell' + i).append('<h3>' + NYData.responsr.docs[i].headline.main+ "</h3>");
+            }
+
+            if(NYData.response.docs[i] && NYData.response.docs[i].byline.hadOwnProperty('original')){
+                console.log(NYData.response.docs[i].byline.original);
+            }
+
+            // attach content to approprraiate well
+            $('#articleWell-' + i).append("<h3>" + NYData.response.docs[i].headline.main + "</h3>");
+            $('#articleWell-' + i).append("<h5>" + NYData.response.docs[i].section_name + "</h5>");
+            $('#articleWell-' + i).append("<h5>" + NYData.response.docs[i].pub_date + "</h5>");
+            $('#articleWell-' + i).append("<h5>" + NYData.response.docs[i].byline.original + "</h5>");
+            $('#articleWell-' + i).append("<a href=" + NYData.response.docs[i].web_url + ">" + NYData.response.docs[i].web_url + "<a>");
+
+        }
+
+     
+        })
+
         
         console.log(queryUrl);
         console.log(numArticle);
@@ -104,13 +147,13 @@ var articleCounter= 0;
         // })
         // console.log("This is NY article search: ", response);
 
-        articleSearch (searchTerm);
+        // articleSearch (searchTerm);
         
-    });
+    };
 
-    }
+    
 
-});
+
 
 
 
